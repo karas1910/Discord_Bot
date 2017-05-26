@@ -49,8 +49,15 @@ async def on_message(message):
             except:
                 await client.send_message(message.channel, 'Unknown build combination or error fetching request.')
             else:
+                m = '```Markdown\n# Most Frequent Core Build\n'
+                #await client.send_message(message.channel, '```Most Frequent Core Build')
+                count = 1
                 for i in item_build:
-                    await client.send_message(message.channel, japanese_dict[i])
+                    m += str(count) + '. ' + japanese_dict[i] + '\n'
+                    count += 1
+                    #await client.send_message(message.channel, '**'+japanese_dict[i]+'**')
+                m += '```\nhttp://champion.gg/champion/{}/{}'.format(champion, role)
+                await client.send_message(message.channel, m)
         print("投稿者：", message.author, "メッセージ：", message.content)
     elif message.content.startswith('!ping'):
         await client.send_message(message.channel, 'pong')
