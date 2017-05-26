@@ -16,6 +16,7 @@ async def on_ready():
     print('起動しました!')
     print('ユーザーネーム: {}  ユーザーID: {}'.format(client.user.name, client.user.id))
 
+
 @client.event
 async def on_message(message):
     if message.content.startswith('!build') and client.user.id != message.author.id:
@@ -25,16 +26,20 @@ async def on_message(message):
             await client.send_message(message.channel, '!build [champion] [top|jungle|middle|adc|support]')
         else:
             champion = champion[0].upper() + champion[1:].lower()
-            role = role[0].upper() + role[1:].lower()
+            if role.upper() == 'ADC':
+                role = role.upper()
+            else:
+                role = role[0].upper() + role[1:].lower()
             try:
                 item_build = fetch_build(champion, role)
             except:
                 await client.send_message(message.channel, 'Unknown build combination or error fetching request.')
             else:
                 await client.send_message(message.channel, item_build)
-                print("投稿者：", message.author, "メッセージ：", message.content)
+        print("投稿者：", message.author, "メッセージ：", message.content)
     elif message.content.startswith('!ping'):
         await client.send_message(message.channel, 'pong')
+
 
 def fetch_build(champion, role):
     try:
@@ -51,5 +56,6 @@ def fetch_build(champion, role):
             item_build.append(i.attrs['href'].split('/')[-1])
 
         return item_build
+
 
 client.run(config.TOKEN_ID)
