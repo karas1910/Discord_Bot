@@ -6,6 +6,7 @@ import logging
 import urllib
 import config
 from bs4 import BeautifulSoup
+import asyncio
 
 
 client = discord.Client()
@@ -19,6 +20,15 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
+    f = open('./japanese_dict.txt').read()[1:-1].split(',')
+    japanese_dict = {"Enchantment: Cinderhulk": '緑エンチャ'
+                     ,"Enchantment: Warrior": '赤エンチャ'
+                     ,"Enchantment: Runic Echoes": '青エンチャ'
+                     ,"Enchantment: Bloodrazor": '黄エンチャ'}
+    for i in f:
+        x = i.split(':')
+        japanese_dict[x[0].strip('\ \'\"')] = x[1].strip('\ \"\'')
+
     if message.content.startswith('!build') and client.user.id != message.author.id:
         try:
             champion, role = message.content.split()[1:]
@@ -28,6 +38,10 @@ async def on_message(message):
             champion = champion[0].upper() + champion[1:].lower()
             if role.upper() == 'ADC':
                 role = role.upper()
+            elif role.upper() == 'MID':
+                role = 'Middle'
+            elif role.upper() == 'SUP':
+                role = 'Support'
             else:
                 role = role[0].upper() + role[1:].lower()
             try:
@@ -35,7 +49,8 @@ async def on_message(message):
             except:
                 await client.send_message(message.channel, 'Unknown build combination or error fetching request.')
             else:
-                await client.send_message(message.channel, item_build)
+                for i in item_build:
+                    await client.send_message(message.channel, japanese_dict[i])
         print("投稿者：", message.author, "メッセージ：", message.content)
     elif message.content.startswith('!ping'):
         await client.send_message(message.channel, 'pong')
